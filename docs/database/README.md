@@ -30,6 +30,41 @@ All data shown is test data.
 
 No real personal information is stored or displayed.
 
+
+Organisation Table
+
+Table Name: Organisation
+Purpose: Stores information about NGOs, government bodies, charities, and relief agencies that are part of the emergency-response network.
+This table is used to match incoming reports to the correct organisation for response.
+
+Fields:
+Field	Description
+org_name	Name of the organisation (NGO, charity, government department)
+org_type	Category of organisation: NGO, Government, Charity, etc.
+contact_name	Main point of contact for emergency coordination
+contact_email	Email address for receiving disaster alerts
+contact_phone	Emergency phone contact
+parish_focus	Region(s) where the organisation is active
+Example Rows (Test Data)
+
+Used for development and testing of routing-to-organisation logic.
+
+Global Citizens Caribbean – NGO – St. Thomas
+
+Red Cross (Government unit) – St. Mary
+
+Oxfam (Charity) – St. James
+
+Notes:
+
+All entries are sample/test organisations for system validation.
+
+Table is used to automatically route emergency categories to matching organisations.
+
+Ensures structured coordination during disaster events.
+
+No real contact details are stored.
+
 Table feeds the map API and admin dashboard.
 
 Validated through Base44 data model configuration.
