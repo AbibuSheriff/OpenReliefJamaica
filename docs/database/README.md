@@ -68,3 +68,40 @@ No real contact details are stored.
 Table feeds the map API and admin dashboard.
 
 Validated through Base44 data model configuration.
+
+EmailLog Table
+
+Table Name: EmailLog
+Purpose: Captures all system-generated email events for NGOs, admins, and new organisations. Allows debugging, auditing, and full visibility into communication flows.
+
+This table is essential for tracking:
+
+onboarding emails
+
+approvals/rejections
+
+admin notifications
+
+confirmation messages
+
+failed vs successful delivery
+
+Fields
+Field	Description
+email_type	The type of email sent (registration confirmation, admin notification, NGO approval, etc.)
+recipient_email	Email address of the user or organisation receiving the message
+recipient_name	Name of the person or admin receiving the message
+subject	Subject line of the outgoing email
+status	Delivery status (sent, failed)
+organ_id	Organisation identifier the email relates to
+Notes
+
+All emails shown are test data for development and validation.
+
+No real user emails are stored or displayed.
+
+This table helps ensure the platform’s communication system is working correctly.
+
+Failed statuses are expected for test accounts and help validate the error-handling workflow.
+
+This contributes to the platform’s audit trail, which is important in emergency systems.
