@@ -49,4 +49,48 @@ Screenshots Included
 
 roles-and-users.png — Shows admin role setup
 
+App-Level Security Overview
+
+The OpenRelief Jamaica platform includes a centralised App Security dashboard where entity-level access policies can be configured.
+
+Current Entity Access (Development Phase)
+
+During early development, the following data entities are set to Public for testing and validation:
+
+Report
+
+Organisation
+
+EmailLog
+
+For each entity, Base44 shows a warning:
+“All users have full access.”
+
+This is deliberate during testing so that:
+
+The frontend can be developed without permission blocks
+
+Data models can be validated quickly
+
+API examples can be tested with real entities
+
+System flows (email, registration, NGO onboarding) can be verified end-to-end
+
+Future Access Policies (Production Phase)
+
+In production, the platform is designed to enforce strict access controls:
+
+Public Users: Can submit reports but cannot view or edit any backend data
+
+Organisations/NGOs: Can only view reports in their assigned parish or focus area
+
+Admins: Full access to all data entities + security configuration
+
+Security Tools
+
+The platform includes a Security Scan feature that checks for misconfigurations, missing rules, or over-exposed data.
+This is run before final deployment to ensure no sensitive information is publicly accessible.  
+
+
+
 Additional screenshots will cover policies and access rules
