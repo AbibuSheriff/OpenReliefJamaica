@@ -1,96 +1,261 @@
-Security Model — OpenRelief Jamaica
+Security Documentation — OpenRelief Jamaica
 
-The platform includes a basic but effective role-based access control system to ensure only authorised users can view, edit, or administer sensitive information.
+This document explains the full security model for OpenRelief Jamaica, including role-based access control (RBAC), data protection rules, endpoint security, and backend validation. It reflects how the platform protects sensitive information during disaster situations while ensuring fast access for legitimate responders.
 
-User Roles
+The system uses Base44’s built-in security framework for permissions, access rules, and entity-level restrictions.
 
-Admin (Owner)
+1. Overview
 
-Full control over the platform
+OpenRelief Jamaica handles sensitive emergency information.
+To ensure safety, the entire platform is built around three pillars:
 
-Can approve organisations
+1.1 Role-Based Access Control (RBAC)
 
-Can view all reports
+Different users see different information depending on their role.
 
-Can manage security and settings
+1.2 Data Protection & Field-Level Security
 
-Can invite/remove users
+Personal data is hidden from public users and anonymised where required.
 
-Public User
+1.3 Secure API Layer
 
-Can submit disaster reports
+All data access goes through Base44’s authenticated backend endpoints.
 
-No access to backend or dashboards
+This creates a secure, auditable workflow from the moment a report is submitted to the moment a responder takes action.
 
-Organisation / NGO
+2. User Roles
 
-Can view only their assigned parish or focus area
+The platform uses three primary roles with strict separation of permissions.
 
-Can update or respond to relevant reports
+2.1 Citizen (Public / Anonymous)
 
-Authentication & Access Layers
-1. UI Layer Security
+Can submit new emergency reports
 
-Buttons (delete, approve, admin tools) only show if isAdmin === true.
+Can view public fields of existing reports
 
-2. Handler Validation
+Cannot edit or delete reports
 
-Every critical operation checks isAdmin before running.
+Cannot access NGO dashboards or admin tools
 
-Prevents unauthorised users from modifying or deleting data.
+Personal identifying information is hidden from citizens
 
-3. Backend Enforcement
+2.2 NGO / Relief Worker
 
-Even if someone bypasses the UI, the backend rejects unauthorised actions.
+Must be approved by an admin
 
-Ensures full protection against API abuse.
+Can view reports within their parish or operation area
 
-Screenshots Included
+Can update report statuses (e.g., “in-progress”, “resolved”)
 
-roles-and-users.png — Shows admin role setup
+Can edit their organisation profile
 
-App-Level Security Overview
+Cannot access system-wide admin actions
 
-The OpenRelief Jamaica platform includes a centralised App Security dashboard where entity-level access policies can be configured.
+2.3 Admin
 
-Current Entity Access (Development Phase)
+Full access to all reports and organisations
 
-During early development, the following data entities are set to Public for testing and validation:
+Can approve or reject NGOs
 
-Report
+Can view and manage EmailLog
 
-Organisation
+Can change security rules
 
-EmailLog
+Can oversee all backend triggers and workflows
 
-For each entity, Base44 shows a warning:
-“All users have full access.”
+This structure ensures maximum transparency for the public, while reserving sensitive tools for trusted users.
 
-This is deliberate during testing so that:
+3. Entity Security Rules
 
-The frontend can be developed without permission blocks
+OpenRelief Jamaica uses entity-level permissions to control how each role interacts with the data.
 
-Data models can be validated quickly
+3.1 Report Table Security
 
-API examples can be tested with real entities
+Citizen
 
-System flows (email, registration, NGO onboarding) can be verified end-to-end
+Create: Yes
 
-Future Access Policies (Production Phase)
+Read: Only public fields
 
-In production, the platform is designed to enforce strict access controls:
+Update/Delete: No
 
-Public Users: Can submit reports but cannot view or edit any backend data
+NGO
 
-Organisations/NGOs: Can only view reports in their assigned parish or focus area
+Create: No
 
-Admins: Full access to all data entities + security configuration
+Read: Allowed within their assigned region
 
-Security Tools
+Update: Yes (status field only)
 
-The platform includes a Security Scan feature that checks for misconfigurations, missing rules, or over-exposed data.
-This is run before final deployment to ensure no sensitive information is publicly accessible.  
+Delete: No
+
+Admin
+
+Create/Read/Update/Delete: Yes
+
+Sensitive fields (e.g., contact phone, name) are never exposed publicly.
+
+3.2 Organisation Table Security
+
+Citizen
+
+Read: Only approved organisations
+
+Create: Yes (registration form)
+
+Update/Delete: No
+
+NGO
+
+Read: Own organisation only
+
+Update: Yes
+
+Create/Delete: No
+
+Admin
+
+Full access
+
+Approves new NGOs
+
+Controls activation status
+
+3.3 EmailLog Table Security
+
+Citizen
+
+No access
+
+NGO
+
+No access
+
+Admin
+
+Full read access
+
+Used for debugging email failures and delivery
+
+This ensures internal logs are restricted only to trusted system administrators.
+
+4. API Security
+
+All API access goes through Base44’s backend engine, protected by:
+
+4.1 API Key Authentication
+
+Every request requires a valid API key:
+
+{
+  "api_key": "REMOVED_FOR_SECURITY"
+}
 
 
+Keys are never stored in the repository.
+No request is processed without an authenticated key.
 
-Additional screenshots will cover policies and access rules
+4.2 Input Validation
+
+The backend validates:
+
+Required fields
+
+Email format
+
+Phone number format
+
+Allowed categories
+
+Region/Parish names
+
+Invalid or unsafe input is rejected with clear JSON errors.
+
+4.3 Role Checks
+
+Before any update, the backend verifies:
+
+User role
+
+Region access
+
+Action permission (read / create / update / restricted fields)
+
+5. Data Protection Measures
+
+OpenRelief Jamaica follows strict data protection rules:
+
+5.1 Personal Data Separation
+
+Fields such as name and phone number are:
+
+Never shown publicly
+
+Only visible to approved NGOs and admins
+
+Stored in restricted columns
+
+5.2 Anonymous Mode
+
+Citizens can submit reports without providing personal information.
+
+5.3 No Direct Database Access
+
+Frontend never connects directly to Firebase or Base44 tables.
+All access flows through the backend API.
+
+5.4 Email Safety
+
+Outgoing emails are sent using safe templates and logged in EmailLog for auditing.
+
+6. Threat Prevention
+
+The platform includes safeguards against common attack vectors.
+
+6.1 Spam / Fake Report Prevention
+
+Required field validation
+
+Region-based filtering
+
+NGO/admin approval before responding
+
+Automatic review workflows
+
+6.2 Injection Prevention
+
+Base44’s API engine sanitises input to prevent:
+
+Script injection
+
+Malformed data
+
+API misuse
+
+6.3 Abuse Prevention
+
+Admins can:
+
+Remove malicious organisations
+
+Update security rules
+
+Disable access within seconds
+
+7. Summary
+
+The OpenRelief security model ensures:
+
+Citizens can report safely
+
+NGOs only access what they need
+
+Admins maintain full control
+
+Sensitive data stays protected
+
+Backend logic enforces strict permissions
+
+All actions go through secure API endpoints
+
+This provides a reliable, trust-based emergency communication platform that protects both citizens and responders while maintaining transparency and speed during national crises.
