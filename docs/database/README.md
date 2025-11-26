@@ -1,107 +1,214 @@
-Database Schema — Report Table
+Database Documentation — OpenRelief Jamaica
 
-Table Name: Report
-Purpose: Stores all disaster and emergency reports submitted by users across Jamaica.
-This table powers the real-time map view and the dashboard used by relief workers, NGOs, and administrators.
+This document explains the full database structure used by OpenRelief Jamaica, including all entities, fields, relationships, and data-handling rules. The platform uses Base44’s internal database engine + Firebase for persistence and real-time syncing.
 
-Fields:
-Field	Description
-parish	Geographic region of the report (e.g., Kingston, St. James)
-community	Specific community or district
-category	Type of emergency: water, shelter, food, medical, etc.
-description	Context or details submitted by the citizen
-household_size	Number of people affected
-reporter_name	Name used by the submitter (can be anonymous or test)
-Example Rows (Test Data)
+The database is designed to be simple, fast, and safe, optimised for emergency-response workflows and low-connectivity environments.
 
-Used for validation and system testing.
+1. Overview
 
-"Need water asap" – household size 5 – Ann Moore
+The database layer consists of three core entities:
 
-"Need shelter, have 2 kids" – Desmond
+Report — citizen-submitted emergency information
 
-"Need help" – test account
+Organisation — registered NGOs and relief teams
 
-"Mountain Side Community needs food" – Aaron Hendricks
+EmailLog — logging system for all outbound email notifications
 
-Notes:
+Each entity is tightly integrated with the backend API and governed by role-based access controls documented in /docs/security.
 
-All data shown is test data.
+The database is fully managed through Base44 and is not directly accessible from the frontend for security reasons.
 
-No real personal information is stored or displayed.
+2. Entities and Field Definitions
+2.1 Report Entity
 
+Stores all citizen-submitted emergency reports.
 
-Organisation Table
+Purpose:
+Capture urgent needs during emergencies in a consistent and structured format.
 
-Table Name: Organisation
-Purpose: Stores information about NGOs, government bodies, charities, and relief agencies that are part of the emergency-response network.
-This table is used to match incoming reports to the correct organisation for response.
+Key Fields:
 
-Fields:
-Field	Description
-org_name	Name of the organisation (NGO, charity, government department)
-org_type	Category of organisation: NGO, Government, Charity, etc.
-contact_name	Main point of contact for emergency coordination
-contact_email	Email address for receiving disaster alerts
-contact_phone	Emergency phone contact
-parish_focus	Region(s) where the organisation is active
-Example Rows (Test Data)
-
-Used for development and testing of routing-to-organisation logic.
-
-Global Citizens Caribbean – NGO – St. Thomas
-
-Red Cross (Government unit) – St. Mary
-
-Oxfam (Charity) – St. James
+Field Name	Type	Description
+parish	Text	Parish where the incident occurred
+community	Text	Community or district
+category	Text	Type of need (water, food, shelter, medical, etc.)
+description	Text	Summary of the situation
+household_size	Number	Number of people affected
+reporter_name	Text	Optional citizen name
+contact_phone	Text	Optional phone number
+status	Text	pending / in-progress / resolved
+created_at	DateTime	Timestamp of submission
 
 Notes:
 
-All entries are sample/test organisations for system validation.
+Personal details never appear on public pages
 
-Table is used to automatically route emergency categories to matching organisations.
+NGOs only see reports in their assigned region
 
-Ensures structured coordination during disaster events.
+Status is updated by verified responders only
 
-No real contact details are stored.
+2.2 Organisation Entity
 
-Table feeds the map API and admin dashboard.
+Stores all NGOs, charities, and emergency units that register to respond to reports.
 
-Validated through Base44 data model configuration.
+Purpose:
+Provide a verified network of legitimate relief organisations.
 
-EmailLog Table
+Key Fields:
 
-Table Name: EmailLog
-Purpose: Captures all system-generated email events for NGOs, admins, and new organisations. Allows debugging, auditing, and full visibility into communication flows.
+Field Name	Type	Description
+org_name	Text	Organisation name
+org_type	Text	NGO, government agency, community group
+contact_name	Text	Main contact person
+contact_email	Text	Email for verification
+contact_phone	Text	Phone number
+parish_focus	Text	Region where organisation operates
+approved_status	Text	pending / approved / rejected
+created_at	DateTime	Registration timestamp
 
-This table is essential for tracking:
+Notes:
 
-onboarding emails
+Organisations must be approved by an admin
 
-approvals/rejections
+Approved NGOs gain access to restricted data
 
-admin notifications
+Rejected NGOs cannot log in or view reports
 
-confirmation messages
+2.3 EmailLog Entity
 
-failed vs successful delivery
+Tracks all outgoing email notifications.
 
-Fields
-Field	Description
-email_type	The type of email sent (registration confirmation, admin notification, NGO approval, etc.)
-recipient_email	Email address of the user or organisation receiving the message
-recipient_name	Name of the person or admin receiving the message
-subject	Subject line of the outgoing email
-status	Delivery status (sent, failed)
-organ_id	Organisation identifier the email relates to
-Notes
+Purpose:
+Provide a transparent audit trail of system actions, including:
 
-All emails shown are test data for development and validation.
+NGO registration confirmations
 
-No real user emails are stored or displayed.
+Admin alert notifications
 
-This table helps ensure the platform’s communication system is working correctly.
+NGO approval responses
 
-Failed statuses are expected for test accounts and help validate the error-handling workflow.
+Key Fields:
 
-This contributes to the platform’s audit trail, which is important in emergency systems.
+Field Name	Type	Description
+email_type	Text	registration, admin_alert, approval
+recipient_email	Text	Recipient’s email
+recipient_name	Text	Optional name
+subject	Text	Email subject line
+status	Text	sent / failed
+timestamp	DateTime	Sent time
+
+Notes:
+
+Only admins can view this table
+
+Useful for diagnosing email failures or SMTP issues
+
+3. Data Relationships
+
+The system currently uses loose relational links between entities, managed at the application level:
+
+3.1 Report → Organisation
+
+NGOs can update the status of reports in their region
+
+No hard foreign key enforced for simplicity
+
+Application logic handles matching based on parish/operation area
+
+3.2 Organisation → EmailLog
+
+Emails with type registration and approval are linked by organisation email
+
+3.3 Report → EmailLog (optional)
+
+Email logs may reference report submissions if needed (e.g., future confirmation emails)
+
+4. Data Handling Rules
+4.1 Validation Rules
+
+Required fields must be completed (parish, community, category, description, household size)
+
+Phone numbers validated for digits
+
+Email fields validated on organisation submission
+
+Status fields restricted to allowed values
+
+4.2 Sanitisation
+
+Base44 sanitises all incoming input to prevent:
+
+Script injection
+
+Malformed fields
+
+Invalid data types
+
+4.3 Privacy Controls
+
+Personal details are hidden from public views
+
+NGOs only access data relevant to their region
+
+Only admins access full records
+
+4.4 Soft Security
+
+No citizen-submitted data is ever publicly linked to an identity
+
+Reporters may remain fully anonymous
+
+5. Database Screenshots
+
+Screenshots of the entities are stored in:
+
+/docs/database/screen/
+    report-table.png
+    organisation-table.png
+    email-log-table.png
+
+
+These demonstrate the actual table structure inside Base44.
+
+6. Future Data Enhancements
+6.1 Additional Entities
+
+ResponseLog
+
+Attachment / media support
+
+Location coordinates
+
+6.2 Analytics Layer
+
+Hotspot detection
+
+Report clustering
+
+Automated severity scoring
+
+6.3 Multi-Country Extensions
+
+Database can be expanded with:
+
+country_code
+
+region_code
+
+multi-country report routing
+
+7. Summary
+
+The OpenRelief Jamaica database is:
+
+Lightweight
+
+Fast
+
+Secure
+
+Easy to scale
+
+Built for emergency conditions
+
+It provides a clean structure for report submission, NGO management, and email auditing, supporting a full end-to-end emergency reporting platform.
