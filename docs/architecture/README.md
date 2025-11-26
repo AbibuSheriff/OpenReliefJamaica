@@ -1,81 +1,91 @@
-README.md for /docs/architecture/
-
 System Architecture — OpenRelief Jamaica
 
-This folder contains the high-level architecture for the OpenRelief Jamaica platform.
-It explains how all major parts of the system work together — frontend, backend, security, database, and external services.
+This folder contains the complete technical architecture of the OpenRelief Jamaica platform.
+It visually explains how every part of the system works together — from users on the frontend to the backend, database, security layer, and email services.
 
-Architecture Overview
+Architecture Diagram
 
-OpenRelief Jamaica is built on three core layers:
+Below is the official architecture diagram used to represent the system:
 
-1. Frontend Layer (Base44 UI)
+What This Diagram Shows
+1. User Groups
 
-Accepts report submissions
+The system supports three different roles:
 
-Displays public reports
+Citizen User — submits disaster needs
 
-Provides NGO login + admin dashboard
+Relief Worker / NGO — views, updates, and manages reports
 
-Communicates with backend over secure HTTPS (JSON)
+Admin User — oversees all data, approvals, and system actions
 
-2. Backend API (Base44 API Engine)
+These users interact exclusively through the frontend UI.
 
-Handles incoming requests
+2. Frontend Layer (Base44 UI)
 
-Validates all submitted data
+This is the public-facing web interface built with Base44.
+It handles:
 
-Applies role-based access control (Citizen / NGO / Admin)
+Submitting reports
 
-Sends email notifications
+Showing reports
 
-Reads + writes database entities
+Displaying NGO dashboards
 
-3. Database Layer (Base44 Data Tables)
+Admin tools
 
-Report Table — stores citizen-submitted needs
+All user actions trigger API calls to the backend.
 
-Organisation Table — stores verified NGOs
+3. Backend API (Base44 API)
 
-EmailLog Table — tracks all outgoing email notifications
+This is the core application logic.
+It:
 
-Email Service
+Receives requests
 
-Automatic emails are triggered by the backend:
+Validates data
 
-Report confirmations
+Applies role-based access
 
-NGO account approval
+Sends emails
 
-Status update notifications
+Updates database tables
 
-Security Layer
+It is the “brain” of the system.
 
-Security is enforced at multiple levels:
+4. Database Layer
 
-Role-based access
+The backend stores and retrieves information from three main tables:
 
-Admin-only actions protected
+Report Table – citizen-submitted needs
 
-Limited public read access
+Organisation Table – registered NGOs
 
-All calls require API key authentication
+EmailLog Table – all outgoing emails
 
-No direct access to underlying tables
+The backend controls access to protect sensitive data.
 
-Diagram
+5. Email Service
 
-See: system-architecture.png
-This image provides a visual map of the system, showing how users, frontend, backend, emails, and data layers interact.
+Used for:
 
-Purpose of This Folder
+Confirmation emails to citizens
 
-This directory exists to:
+Alert emails to relief workers
 
-Document technical architecture
+NGO registration approvals
 
-Support visa evidence requirements
+The backend triggers these emails based on user actions.
 
-Provide clarity for developers, grant reviewers, and contributors
+6. Security Layer
 
-Show professional system design standards
+Security is enforced across the entire system:
+
+Role-based access control
+
+Limited access to sensitive reports
+
+Protected admin features
+
+Validation before every API call
+
+Only authorised users can perform high-level actions.
