@@ -194,3 +194,7 @@ POST /api/apps/<app_id>/entities/Organisation
 PUT  /api/apps/<app_id>/entities/Organisation/{entityId}
 
 GET  /api/apps/<app_id>/entities/EmailLog
+
+Note: All endpoints require API key authentication using:
+{ "api_key": "REMOVED_FOR_SECURITY" }
+Actual keys are not included in this repo for security reasons.
