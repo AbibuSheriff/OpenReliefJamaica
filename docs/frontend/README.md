@@ -1,131 +1,237 @@
-# Frontend Documentation — OpenRelief Jamaica
+🎨 Frontend Documentation — OpenRelief Jamaica
 
-The frontend of OpenRelief Jamaica is built using Base44’s React-style UI builder.  
-It delivers a clean, fast, mobile-first interface that allows citizens and relief workers to interact with the system in real time.
+The frontend of OpenRelief Jamaica is built using Base44’s component-based UI builder, delivering a fast, mobile-first interface designed for real emergency conditions such as hurricanes, outages, and low-connectivity zones.
 
-This documentation shows the full user journey with annotated screenshots.
+This documentation explains the full user experience, UI decisions, page flows, and how the frontend integrates with the backend API.
 
----
+1. Overview
 
-##  Overview of User Flows
+The frontend delivers three core user flows:
 
-OpenRelief Jamaica provides three primary user experiences:
+1. Citizens
 
-1. **Citizens reporting needs** (food, water, medical help, shelter)
-2. **Relief workers viewing, validating and responding to reports**
-3. **NGOs registering and managing their active status**
+Submit emergency needs quickly and safely.
 
-The UI is designed for **speed, clarity, and emergency-friendly usability**.
+2. Relief Workers / NGOs
 
----
+View real-time reports, filter incidents, and coordinate responses.
 
-##  Home Page
+3. Admins
 
-The home screen introduces the platform and gives users quick access to key features.
+Review reports, validate organisations, and oversee activity.
 
-### Screenshot
-![Home Page](./screen/home-1.png)
+Every screen is designed for clarity, speed, and emergency usability.
 
-### Key Features
-- Hero banner with brand identity  
-- Quick-link cards: “Report a Need” and “View Reports”  
-- CTA for relief workers to login  
-- Clean, emergency-focused colour palette  
+2. Home Page
 
----
+The home screen introduces the platform and gives instant access to key actions.
 
-##  Report a Need Page
+Screenshots:
 
-Citizens can quickly submit urgent needs and provide information about their household, situation, and contact info.
+home-1.png
 
-### Screenshot
-![Report a Need](./screen/home-2.png)
+home-2.png
 
-### Functionality
-- Simple form for faster reporting  
-- Collects structured data for accurate relief routing  
-- Fields: parish, community, description, household size, etc.  
-- Automatically pushes entries to the backend API  
+home-3.png
 
----
+Key elements:
 
-##  View Reports Page
+Hero banner with branding
 
-Displays all submitted reports in real time, enabling transparency and coordination.
+Quick actions:
 
-### Screenshot
-![View Reports](./screen/home-3.png)
+Report a Need
 
-### Functionality
-- Filterable list of disaster/need reports  
-- Publicly visible for transparency  
-- Relief teams can track locations and statuses  
+View Reports
 
----
+Link for NGOs / Relief Workers to log in
 
-##  Active Relief Organisations
+Minimal, emergency-safe colour palette (red, amber, navy)
 
-Verified NGOs and relief teams can view and manage their participation.
+3. Report a Need
 
-### Screenshot
-![NGO Section](./screen/home-4.png)
+This is the most important screen for citizens.
 
-### Functionality
-- Shows active organisations  
-- Allows new NGOs to register  
-- Connects citizens to legitimate responders  
+Screenshots:
 
----
+report-need.png
 
-##  UI Principles
+report-form.png
 
-The frontend is built around four core design principles:
+Functionality:
 
-- **Clarity:** minimal steps, simple language  
-- **Speed:** optimised for poor network conditions  
-- **Safety:** no personal data exposed publicly  
-- **Consistency:** unified colour + component system  
+Fast mobile-friendly form
 
----
+Structured fields:
 
-##  Components Used
+Parish
 
-Reusable UI components include:
+Community
 
-- StatusBadge  
-- ReportCard  
-- NGOCard  
-- NavSidebar  
-- FormInput / Select  
-- Loader and Error States  
+Category (water, food, shelter, medical, etc.)
 
-These components reduce friction and standardise behaviour across the app.
+Description
 
----
+Household size
 
-##  Frontend Folder Structure
+Reporter name (optional)
 
-```
+Phone number
+
+Automatic API submission to:
+
+POST /entities/Report
+
+
+Real-time success confirmation
+
+UI principles:
+
+Speed: minimal scrolling
+
+Clarity: each field clearly labelled
+
+Security: no personal info exposed publicly
+
+4. View Reports (Public Timeline)
+
+Screenshots:
+
+view-reports-1.png
+
+view-reports-2.png
+
+Features:
+
+Real-time list of reports
+
+Filters by category, region, urgency
+
+Mobile-first cards showing:
+
+Parish
+
+Description
+
+Timestamp
+
+Household size
+
+This page gives transparency to citizens and responders.
+
+5. NGO / Relief Worker Section
+
+Screenshots:
+
+ngo-section-1.png
+
+ngo-section-2.png
+
+Features:
+
+List of active NGOs
+
+Registration form for new organisations
+
+Integration with backend approval system
+
+Email verification + admin approval
+
+Role-based visibility for restricted fields
+
+6. UI / UX Principles
+
+The frontend follows four core principles:
+
+1. Clarity
+
+Simple layouts
+
+Minimal actions per screen
+
+Emergency-friendly colours
+
+2. Speed
+
+Optimised for unstable mobile networks
+
+Lightweight UI components
+
+Fast API calls with caching patterns
+
+3. Safety
+
+No sensitive information shown publicly
+
+Anonymous reporting option
+
+Only NGOs with approval can see detailed data
+
+4. Consistency
+
+Reusable UI components
+
+Global colour + typography system
+
+Predictable navigation
+
+7. Components Used
+
+Reusable components built in Base44:
+
+ReportCard — displays incident
+
+NGOCard — displays organisation
+
+StatusBadge — pending / active / resolved
+
+FormInput / Select — structured UI forms
+
+NavSidebar — NGO dashboard navigation
+
+Loader / Empty States — feedback on slow connections
+
+These components reduce friction and maintain consistency across the interface.
+
+8. Frontend Folder Structure
 /docs/frontend
+    README.md
     /screen
         home-1.png
         home-2.png
         home-3.png
-        home-4.png
-    README.md
-```
+        view-reports-1.png
+        ngo-section-1.png
+        report-need.png
 
----
+9. Integration With Backend
 
-##  Summary
+All frontend actions connect directly to Base44’s Backend API:
 
-This frontend demonstrates a fully functional emergency-response interface  
-showing:
+Submit report
 
-- Real user flows  
-- Real UI/UX decisions  
-- Real integration with a live backend API  
-- Real screenshots of a working system  
+Register NGO
 
-This is production-quality evidence of a complete application.
+View report list
 
+Fetch organisations
+
+Update report status (NGOs only)
+
+The frontend never accesses the database directly, ensuring a secure separation between UI and backend logic.
+
+10. Summary
+
+This frontend represents:
+
+A real mobile-first emergency interface
+
+A functional disaster reporting workflow
+
+Real API integration
+
+Live data synchronization
+
+Professional UI/UX decisions
+
+Clear evidence of complete product development
