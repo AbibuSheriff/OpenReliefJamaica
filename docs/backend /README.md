@@ -1,200 +1,240 @@
-# Backend — OpenRelief Jamaica
+Backend — OpenRelief Jamaica
 
-This folder documents how the **backend** of OpenRelief Jamaica works.
+This folder documents how the backend of OpenRelief Jamaica works.
+The backend is built using Base44’s backend engine and handles:
 
-The backend is built using **Base44’s backend engine**.  
-It handles:
+Receiving API requests
 
-- Receiving API requests from the frontend  
-- Validating data before it is saved  
-- Applying **role-based access control**  
-- Writing data into the database tables  
-- Triggering **email notifications**  
-- Returning JSON responses to the frontend  
+Validating submitted data
 
----
+Applying security rules and roles
 
-## 1. Overview
+Writing to the database
 
-OpenRelief Jamaica is split into:
+Triggering automated email notifications
 
-- **Frontend (UI)** – what citizens, relief workers and admins see  
-- **Backend (API + logic)** – where all the rules, checks and saving happen  
-- **Database** – where reports, organisations and emails are stored  
+Returning JSON responses to the frontend
 
-The backend exposes secure HTTP JSON endpoints using the Base44 API.  
-The frontend never talks directly to the database – it always goes through the backend.
+1. Overview
 
----
+The backend powers all the logic behind the platform.
+It connects:
 
-## 2. Main Responsibilities
+Frontend (Base44 UI) — what citizens, NGOs, and admins interact with
 
-The backend is responsible for:
+Backend API — where all validation and processing happens
 
-1. **Report handling**
-   - Accept new disaster reports from citizens
-   - Validate required fields (parish, community, category, description, household_size, reporter_name, contact_phone)
-   - Save valid reports to the **Report** table
-   - Reject invalid or incomplete reports
+Database — where all final data is stored
 
-2. **NGO / Relief organisation management**
-   - Accept registration requests from NGOs
-   - Store organisation details in the **Organisation** table
-   - Notify admins when a new organisation registers
-   - Allow admins to approve or reject organisations
+Email service — sends confirmations and alerts
 
-3. **Email notifications**
-   - Send confirmation emails to NGOs when they register
-   - Send welcome / approval emails when NGOs are approved
-   - Send notifications to the admin address for new activity
-   - Log all sent / failed emails in the **EmailLog** table
+Security layer — controls who can do what
 
-4. **Security & roles**
-   - Enforce different permissions for:
-     - **Citizen user** (public)
-     - **Relief worker / NGO**
-     - **Admin**
-   - Protect admin-only actions behind role checks
-   - Limit what anonymous users can see and do
+The backend exposes secure JSON endpoints through Base44’s API.
+The frontend never accesses the database directly — only through the backend.
 
----
+2. Main Backend Responsibilities
+Report Handling
 
-## 3. Data Entities Used by the Backend
+Accept new disaster reports from citizens
 
-The backend mainly works with three entities (see `/docs/database` for full detail):
+Validate required fields
 
-- **Report**
-  - Stores disaster / need reports created by citizens
-  - Key fields: parish, community, category, description, household_size, reporter_name, contact_phone, status
+Save reports to the Report table
 
-- **Organisation**
-  - Stores registered NGOs and relief organisations
-  - Key fields: org_name, org_type, contact_name, contact_email, contact_phone, parish_focus, approved_status
+Reject invalid submissions
 
-- **EmailLog**
-  - Stores every email the system attempts to send
-  - Key fields: email_type, recipient_email, recipient_name, subject, status (sent / failed), related organisation or report
+NGO / Organisation Management
 
-The backend reads and writes to these tables through the Base44 API.
+Accept new organisation registrations
 
----
+Store them in the Organisation table
 
-## 4. Request Lifecycle Examples
+Notify admin for approval
 
-### 4.1 Citizen Submits a Report
+Email NGO with confirmation and approval status
 
-1. Citizen opens the **“Report a Need”** page on the frontend.
-2. They fill in parish, community, category, description, household size, name, and contact phone.
-3. Frontend sends a POST/PUT request to the Base44 backend API endpoint for **Report**.
-4. Backend:
-   - Validates required fields  
-   - Ensures values are in allowed ranges (e.g. positive household size)  
-   - Saves the report into the **Report** table  
-5. Backend returns a JSON response like:
-   - `{ "success": true, "report_id": "<id>" }`
-6. Frontend shows a success message to the user.
+Email Notifications
 
-### 4.2 NGO Registers on the Platform
+Registration confirmation
 
-1. NGO opens the **Register Your Organisation** form.
-2. Frontend sends the details to the backend endpoint for **Organisation**.
-3. Backend:
-   - Validates email address and required fields  
-   - Creates a new Organisation record with status like `pending_approval`  
-4. Backend triggers:
-   - An **admin notification email** (new organisation registered)  
-   - A **registration confirmation email** to the NGO  
-5. Both emails are stored in the **EmailLog** table with status `sent` or `failed`.
+NGO approval confirmation
 
-### 4.3 Admin Approves an Organisation
+Admin alerts
 
-1. Admin logs in via the **Relief Worker / Admin** dashboard.
-2. Admin changes organisation status from `pending_approval` to `approved`.
-3. Backend:
-   - Checks that the current user has **Admin** role  
-   - Updates the Organisation record  
-   - Sends an **approval email** to the NGO  
-   - Writes the email entry into **EmailLog**
+All email activity logged in EmailLog table
 
----
+Security
 
-## 5. Security and Roles
+Enforce role-based access (Citizen, NGO, Admin)
 
-The backend enforces role-based access.  
-High-level rules:
+Protect sensitive actions
 
-- **Citizen (Public / Anonymous)**
-  - Can submit new **Report** records
-  - Can view **public** reports (e.g. location, category, status)
-  - Cannot access admin actions or edit other people’s reports
+Limit public access
 
-- **Relief Worker / NGO**
-  - Can view reports in their focus area (parish or region)
-  - Can update status fields on reports they are responding to
-  - Can manage their own organisation details
+3. Entities Used by the Backend
+Report
 
-- **Admin**
-  - Full access to all reports and organisations
-  - Can approve / reject organisations
-  - Can configure triggers and security rules
-  - Can view all email logs and system activity
+Stores disaster-related needs.
 
-The Base44 security settings (see `/docs/security`) define which roles can:
+Key fields:
+parish, community, category, description, household_size, reporter_name, contact_phone, status
 
-- Read / create / update Report
-- Read / create / update Organisation
-- Read EmailLog
+Organisation
 
----
+Stores registered NGOs.
 
-## 6. Email Triggers
+Key fields:
+org_name, org_type, contact_name, contact_email, contact_phone, parish_focus, approved_status
 
-Email sending is handled by Base44’s trigger system + external SMTP.
+EmailLog
 
-Typical triggers:
+Stores all outgoing emails.
 
-- **ngo_registration_confirmation**
-  - When a new Organisation is created
-  - Recipient: the NGO contact_email
-  - Purpose: confirm registration
+Key fields:
+email_type, recipient_email, subject, status, timestamp
 
-- **admin_notification_new_ngo**
-  - When a new Organisation is created
-  - Recipient: admin inbox (e.g. `admin@openreliefjamaica.org`)
-  - Purpose: notify admin to review and approve
+4. Request Lifecycle (How Backend Works)
+4.1 Citizen Submits a Report
 
-- **ngo_approval**
-  - When Organisation status changes to `approved`
-  - Recipient: NGO contact_email
-  - Purpose: welcome and give next steps
+User fills in the form
 
-Each email attempt is logged in **EmailLog** with:
+Frontend sends POST → /entities/Report
 
-- `status = sent` or `failed`
-- `subject`
-- `email_type`
-- `recipient_email`
-- Timestamp
+Backend validates
 
-This makes it easy to debug delivery issues.
+Backend saves
 
----
+Backend returns JSON response
 
-## 7. API Endpoints (High-Level)
+Frontend shows confirmation
 
-The backend uses Base44 API endpoints in this pattern:
+4.2 NGO Registers
 
-```text
+NGO submits registration
+
+Backend saves to Organisation
+
+Backend triggers two emails:
+
+NGO confirmation
+
+Admin alert
+
+Emails are logged in EmailLog
+
+4.3 Admin Approves Organisation
+
+Admin changes status → approved
+
+Backend validates admin role
+
+Backend updates the organisation
+
+Backend triggers an approval email
+
+Email is logged
+
+5. Security & User Roles
+
+OpenRelief uses Role-Based Access Control (RBAC).
+
+Citizen (Anonymous / Public)
+
+Can create reports
+
+Can view public report fields
+
+Cannot edit or access admin areas
+
+NGO / Relief Worker
+
+Can update reports assigned to them
+
+Can edit their organisation details
+
+Can view reports in their region
+
+Admin User
+
+Full access
+
+Approves organisations
+
+Views all reports
+
+Manages triggers
+
+Reads email logs
+
+These access rules are enforced in Base44’s security configuration.
+
+6. Email Triggers (Backend Automations)
+
+Email sending is automated inside the backend logic using Base44 triggers.
+
+Trigger: NGO Registration Confirmation
+
+Event: new Organisation created
+
+Recipient: NGO’s contact_email
+
+Purpose: welcome message
+
+Trigger: Admin Alert (New Organisation)
+
+Notifies admin that an NGO is awaiting approval
+
+Trigger: NGO Approval Email
+
+Event: organisation status changes to approved
+
+Recipient: NGO
+
+Purpose: approval + instructions
+
+Every email is logged to the EmailLog table with:
+
+sent or failed
+
+timestamp
+
+subject
+
+recipient
+
+7. API Endpoints (High-Level)
+
+All backend endpoints follow Base44’s API structure:
+
+Report
 GET  /api/apps/<app_id>/entities/Report
 POST /api/apps/<app_id>/entities/Report
 PUT  /api/apps/<app_id>/entities/Report/{entityId}
 
+Organisation
 GET  /api/apps/<app_id>/entities/Organisation
 POST /api/apps/<app_id>/entities/Organisation
 PUT  /api/apps/<app_id>/entities/Organisation/{entityId}
 
+EmailLog
 GET  /api/apps/<app_id>/entities/EmailLog
 
-Note: All endpoints require API key authentication using:
-{ "api_key": "REMOVED_FOR_SECURITY" }
-Actual keys are not included in this repo for security reasons.
+Authentication
+
+All calls require:
+
+{
+  "api_key": "REMOVED_FOR_SECURITY"
+}
+
+
+Actual keys are not included in this repository.
+
+8. Backend Architecture Diagram
+Citizen User ─┐
+NGO Worker ───┼──> [Frontend UI] → [Backend API] → [Database]
+Admin User ───┘
+
+              → Triggers → Email Service
+              → Security → Role Enforcement
