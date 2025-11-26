@@ -1,40 +1,158 @@
-## 🇯🇲 OpenRelief Jamaica  
-**Founder:** Abibu Sheriff  
-**Purpose:** A free national emergency and disaster reporting platform built to improve crisis response in Jamaica.  
-**Tech:** Base44, Firebase, JavaScript, APIs
+🇯🇲 OpenRelief Jamaica — National Emergency Reporting Platform
 
-### 🚨 What This App Does  
-- Citizens can report emergencies in real-time  
-- Disaster workers can view incidents on a live map  
-- Allows fast communication during hurricanes and national crises  
-- Helps countries without a strong 911/112/999 system
+Founder: Abibu Sheriff
+Mission: A free, real-time disaster reporting system built to modernise Jamaica’s crisis response infrastructure.
+Tech Stack: Base44 • Firebase • JavaScript • Geolocation • REST API
 
-### 💡 Why I Built This  
-I developed OpenRelief during Jamaica’s recent hurricane crisis. The country struggled with communication, delayed responses, and lack of verified information.  
-I built this to help save lives, support emergency teams, and modernise Jamaica’s disaster infrastructure.
+What the Platform Solves
 
-### 👨🏾‍💻 Technology  
-- Firebase database  
-- Realtime map and geolocation tracking  
-- Custom form submission system  
-- Cloud hosting  
-- Mobile-first design  
-- API structure for multi-country expansion
+Jamaica’s recent hurricane exposed massive communication gaps:
 
-### 📌 Features  
-- Report emergencies  
-- Live map view  
-- Real-time data sync  
-- NGO + responder dashboard  
-- Category filters  
-- Anonymous reporting
+Slow emergency response
 
-### 🌍 Future Development  
-- SMS reporting system  
-- Multi-country deployment  
-- AI verification layer  
-- Gov/NGO integrations  
-- Multi-language versions
+No single national reporting channel
 
-### 📷 Screenshots  
-(Screenshots will be added later)
+Conflicting information
+
+Vulnerable communities unable to get help
+
+OpenRelief Jamaica fixes this.
+It enables citizens → responders → NGOs to communicate instantly during emergencies.
+
+Core Capabilities
+For Citizens
+
+Submit emergency reports instantly
+
+Share location, needs, household size, contact info
+
+Option to report anonymously
+
+For NGOs & Relief Workers
+
+Live map of all incidents
+
+Filterable by category, parish, severity
+
+See pending / in-progress / resolved cases
+
+Internal dashboard for fast coordination
+
+For Admins
+
+Approve NGOs
+
+Review and manage reports
+
+Monitor email logs and system behaviour
+
+Why I Built This
+
+During the hurricane, Jamaica had zero unified disaster reporting system.
+People were stranded. Lines were down. Help was delayed.
+
+Instead of complaining, I built a solution.
+
+OpenRelief was created to:
+
+Save lives
+
+Improve emergency coordination
+
+Give Jamaica a digital disaster-response system it never had
+
+Provide a scalable model for other developing countries
+
+Technology Overview
+Backend (Base44 API)
+
+Secure API endpoints
+
+Role-based access control (Citizen / NGO / Admin)
+
+Data validation
+
+Email triggers (NGO confirmation, admin alerts, approvals)
+
+Logs + audit tracking
+
+Database (Firebase + Base44 tables)
+
+Report
+
+Organisation
+
+EmailLog
+
+Frontend
+
+Mobile-first UI
+
+Real-time map using geolocation
+
+Clean reporting form
+
+NGO dashboard
+
+Architecture
+
+Frontend → Backend API → Database
+
+Email service triggers & role enforcement
+
+Secure workflow from report → validation → dispatch
+
+(Full diagrams in /docs/architecture)
+
+Key Features
+
+Real-time emergency reporting
+
+Live incident map
+
+Anonymous submissions
+
+NGO approval system
+
+Automated email notifications
+
+Region-based access for responders
+
+Admin dashboard
+
+Roadmap (Next 90 Days)
+Phase 1 — Stability
+
+Add SMS reporting
+
+Offline mode
+
+Auto-load testing for disaster spikes
+
+Phase 2 — Expansion
+
+Caribbean-wide deployment
+
+Ministry + ODPEM integration
+
+AI classification of incoming reports
+
+Phase 3 — Intelligence Layer
+
+Hotspot prediction
+
+Automated risk scoring
+
+Weather + flood API integrations
+
+Screenshots
+
+(Will be added after UI finalisation.)
+
+Status
+
+MVP complete • Backend documented • Architecture published • Currently preparing full deployment
+
+Want to contribute?
+
+OpenRelief is open to partnerships with NGOs, researchers, and disaster-response organisations.
